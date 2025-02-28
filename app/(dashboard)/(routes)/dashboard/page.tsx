@@ -5,6 +5,7 @@ import { ArrowRight, MessageSquare, History, Edit3 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
+import { LoadingOverlay } from "@/components/ui/loading-overlay";
 
 const tools = [
   {
@@ -37,9 +38,10 @@ interface EmailEntry {
   timestamp: string;
 }
 
-const DashboardPage = () => {
+export default function DashboardPage() {
   const router = useRouter();
   const [emailHistory, setEmailHistory] = useState<EmailEntry[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const storedEmails = JSON.parse(localStorage.getItem('emailHistory') || '[]') as EmailEntry[];
@@ -49,10 +51,11 @@ const DashboardPage = () => {
 
   return (
     <div className="min-h-screen bg-[#1E293B] flex flex-col items-center py-12 px-4">
+      {isLoading && <LoadingOverlay message="Loading dashboard..." />}
       {/* Hero Section */}
       <div className="text-center mb-12">
         <h1 className="text-5xl font-extrabold text-white mb-4">
-          Welcome to IntelliMail
+          Welcome to Ultimail
         </h1>
         <p className="text-lg text-gray-400">
           Discover our cutting-edge tools designed to enhance your email experience.
@@ -82,7 +85,7 @@ const DashboardPage = () => {
       </div>
 
       {/* Email History Section */}
-      <div className="mt-12 w-full max-w-6xl">
+      {/* <div className="mt-12 w-full max-w-6xl">
         <h2 className="text-3xl font-bold text-white mb-6">Your Created Emails</h2>
         <div className="bg-white shadow-lg rounded-lg p-6">
           {emailHistory.length > 0 ? (
@@ -105,9 +108,7 @@ const DashboardPage = () => {
             </p>
           )}
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };
-
-export default DashboardPage;

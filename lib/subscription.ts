@@ -10,32 +10,25 @@ export const checkSubscription = async () => {
     return false;
   }
 
-  const   
- userSubscription = await prismadb.userSubscription.findUnique({
-    where: { userId },
-    /*select: {
-      stripeSubscriptionId: true,
-      stripeCurrentPeriodEnd: true,
-      stripeCustomerId: true, 
-      stripePriceId: true, 
-    },*/
-  });
-  console.log({
-    userSubscription
-  })
-  const   
-    UserApiLimit = await prismadb.userApiLimit.findUnique({
+  const userSubscription = await prismadb.userSubscription.findUnique({
     where: { userId },
   });
-  console.log({
-    userSubscription,UserApiLimit
-  })
-  if (!userSubscription) { 
-    return false; 
-  }
-  const isValid = 
-      userSubscription.stripePriceId
-      userSubscription.stripeCurrentPeriodEnd?.getTime()! + DAY_IN_MS > Date.now(); 
 
-    return !!isValid;
+  if (!userSubscription) {
+    return false;
+  }
+
+  // Check if user has a valid subscription
+  const isValid = 
+    userSubscription.stripePriceId &&
+    userSubscription.stripeCurrentPeriodEnd?.getTime()! + DAY_IN_MS > Date.now();
+
+  console.log("Subscription check:", {
+    userId,
+    hasSubscription: !!userSubscription,
+    isValid,
+    endDate: userSubscription.stripeCurrentPeriodEnd
+  });
+
+  return isValid;
 };

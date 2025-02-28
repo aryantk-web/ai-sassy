@@ -27,6 +27,7 @@ async function createOrRetrieveCustomerWithEmail(details: CustomerDetails): Prom
   console.log("User Name:", name);
 
   try {
+    
     // Try to find an existing customer by email
     const existingCustomers = await stripe.customers.list({
       email,
@@ -90,12 +91,13 @@ export async function POST(req: NextRequest) {
     })
 
     const stripeSession = await stripe.checkout.sessions.create({
-      success_url: settingsUrl,
-      cancel_url: cancelUrl, 
-      payment_method_types: ["card"], 
-      mode: "subscription", 
+      success_url: `${settingsUrl}?success=true`,
+      cancel_url: `${settingsUrl}?canceled=true`,
+      payment_method_types: ["card"],
+      mode: "subscription",
       billing_address_collection: "auto",
       customer: customerId,
+      allow_promotion_codes: true,
       line_items: [
         {
           price: stripePriceId,

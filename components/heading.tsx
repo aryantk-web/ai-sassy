@@ -8,6 +8,7 @@ interface HeadingProps {
     iconColor?: string; 
     bgColor?: string;
     titleClass?: string; // New prop for title class
+    descriptionClass?: string; // New prop for description class
 }
 
 export const Heading = ({

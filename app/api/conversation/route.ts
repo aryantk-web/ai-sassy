@@ -1,9 +1,10 @@
 // @ts-nocheck
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { OpenAI } from "openai";
+import prismadb from "@/lib/prismadb";
 
-import { checkSubscription } from "@/lib/subscription"; 
+import { checkSubscription } from "@/lib/subscription";
 import { increaseApiLimit, checkApiLimit } from "@/lib/api-limit";
 
 const openai = new OpenAI({
@@ -14,50 +15,111 @@ export async function POST(req: Request) {
   try {
     const { userId } = auth();
     const body = await req.json();
-    const { messages } = body;
+    const { messages, formData } = body;
+    const user = await currentUser();
+
+    console.log("inside /api/conversation endpoint:", { userId, messages, formData });
 
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     if (!openai.apiKey) {
-      return NextResponse.json({ error: "OpenAI API Key not configured" }, { status: 500 });
+      return NextResponse.json(
+        { error: "OpenAI API Key not configured" },
+        { status: 500 }
+      );
     }
 
     if (!messages) {
-      return NextResponse.json({ error: "Messages are required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Messages are required" },
+        { status: 400 }
+      );
     }
-    
-    const freeTrial = await checkApiLimit(); 
-    const isPro = await checkSubscription(); 
 
-    if (!freeTrial && !isPro) { 
-      return new NextResponse("Free trial has expired.", { status: 403 });
-    } 
-    
-    if (!isPro) { 
-      await increaseApiLimit();
-      console.log("increaseLimit"); 
+    // First check if user has a valid subscription
+    const isPro = await checkSubscription();
+    console.log("Subscription status:", { isPro });
+
+    // Only check API limit if user is not a pro subscriber
+    if (!isPro) {
+      const freeTrial = await checkApiLimit();
+      console.log("Free trial status:", { freeTrial });
+
+      if (!freeTrial) {
+        return NextResponse.json(
+          {
+            error: "API_LIMIT_EXCEEDED",
+            message: "You have reached the maximum limit of requests. Please upgrade to continue."
+          },
+          { status: 403 }
+        );
+      }
+    }
+
+    // Fetch the current API limit count for the user
+    const userLimit = await prismadb.userApiLimit.findUnique({
+      where: {
+        userId: userId,
+      },
+    });
+
+    // Check if the count exists and is greater than 0
+    if (!userLimit || userLimit.count <= 0) {
+      console.log("User has reached limit:", userId);
+      return NextResponse.json({
+        error: "API_LIMIT_EXCEEDED",
+        message: "You have reached the maximum limit of requests. Please upgrade to continue."
+      }, { 
+        status: 403 
+      });
     }
 
     // Simplicity instructions
     const instructions = [
-      { role: "system", content: "You are a helpful assistant that writes simple, clear, and concise emails." },
-      { role: "user", content: `Write a simple email with a ${messages[1]?.content?.length || "neutral"} tone from ${messages[2]?.content} to ${messages[3]?.content}. The email should be direct, easy to understand, and include the following content: ${messages[4]?.content}` }
+      {
+        role: "system",
+        content:
+          "You are a helpful assistant that writes simple, clear, and concise emails.",
+      },
+      {
+        role: "user",
+        content: `Write a simple email with a ${
+          messages[1]?.content?.length || "neutral"
+        } tone from ${messages[2]?.content} to ${
+          messages[3]?.content
+        }. The email should be direct, easy to understand, and include the following content: ${
+          messages[4]?.content
+        }`,
+      },
     ];
-    
+
     const allMessages = [...instructions, ...messages];
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: allMessages
+      model: "gpt-3.5-turbo",
+      messages: allMessages,
     });
 
     console.log("OpenAI response:", response);
 
+    // Store email history
+    if (formData) {
+      await prismadb.userEmailHistory.create({
+        data: {
+          userId,
+          receiver: formData.receiver,
+          content: response.choices[0]?.message?.content || "",
+          tone: formData.tone,
+          length: formData.length,
+        },
+      });
+    }
+
     return NextResponse.json(response);
-  } catch (error:any) {
+  } catch (error: any) {
     console.log("[CONVERSATION_ERROR]", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return new NextResponse("Internal Error", { status: 500 });
   }
 }

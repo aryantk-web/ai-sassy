@@ -1,6 +1,17 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* Hide scrollbar for Chrome, Safari, and Edge */
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for Firefox */
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
 
 html,
 body,
@@ -311,12 +322,19 @@ body,
 .pricing-plan-wrapper {
   position: relative;
   display: inline-block;
-  padding: 2px; /* Adjust border thickness */
+  padding: 2px;
   background: linear-gradient(45deg, #f06, transparent, #f06);
   background-size: 400% 400%;
   animation: gradientBorder 3s linear infinite;
-  border-radius: 1.5rem; /* Match the border radius of the plan box */
+  border-radius: 1.5rem;
+  @media (max-width: 768px) {
+    min-height: 400px; /* Adjust for smaller screens */
+  }
+  @media (min-width: 769px) {
+    min-height: 550px; /* Adjust for larger screens */
+  }
 }
+
 
 .pricing-plan-content {
   background-color: black;

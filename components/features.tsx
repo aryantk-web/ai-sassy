@@ -126,7 +126,7 @@ const Features = () => {
           <motion.div
             key={index}
             variants={itemVariants}
-            className="p-6 md:p-8 bg-black rounded-lg shadow-lg relative text-left hover:shadow-2xl transition duration-300 ease-in-out flex flex-col justify-between items-center h-full" // Use h-full for flexibility
+            className="p-6 md:p-8 bg-black rounded-lg shadow-lg relative text-left hover:shadow-2xl transition duration-300 ease-in-out flex flex-col justify-between items-center h-full transform hover:scale-105"
           >
             {/* Animated border with rounded corners */}
             <motion.svg
@@ -160,7 +160,9 @@ const Features = () => {
 
             {/* Content */}
             <div className="flex items-center justify-center mb-4">
-              {feature.icon}
+              <div className="bg-gray-800 p-3 rounded-full">
+                {feature.icon}
+              </div>
               <div className="text-center ml-4">
                 <h3 className="text-lg sm:text-2xl font-semibold text-white">{feature.title}</h3>
                 <p className="text-sm md:text-md text-gray-300 mt-2">{feature.description}</p>
@@ -174,6 +176,16 @@ const Features = () => {
           </motion.div>
         ))}
       </motion.div>
+
+      {/* Call to Action Button */}
+      <div className="mt-12">
+        <motion.button
+          className="bg-gradient-to-r from-green-400 to-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:shadow-lg transition duration-300"
+          whileHover={{ scale: 1.05 }}
+        >
+          Start Writing Emails Now
+        </motion.button>
+      </div>
     </div>
   );
 };

@@ -20,18 +20,18 @@ export const LandingHero = () => {
 
       <div className="relative z-10 flex flex-col md:flex-row items-center justify-between h-full px-6 md:px-12 text-white font-bold font-poppins">
         {/* Left Content */}
-        <div className="flex flex-col justify-center space-y-8 flex-1 text-center md:text-left">
-          <div className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold space-y-4">
-            <h1>Build AI-Powered Emails That</h1>
+        <div className="flex flex-col justify-center space-y-8 flex-1 md:flex-[1.7] lg:flex-[2] text-center md:text-left md:mt-[-6rem]">
+          <div className="sm:text-5xl md:text-6xl lg:text-6xl 2xl:text-7xl font-extrabold space-y-4">
+            <h1>Write Emails Faster with AI</h1>
             <div className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500">
               <TypewriterComponent
                 options={{
                   strings: [
-                    "Create Impact.", 
-                    "Sound Like You", 
-                    "Build Connections"
-                  ], 
-                  autoStart: true, 
+                    "Craft Perfect Emails.",
+                    "Personalize in Seconds.",
+                    "Save Time.", "Stay Professional."
+                  ],
+                  autoStart: true,
                   loop: true,
                   cursor: '|'
                 }}
@@ -39,25 +39,25 @@ export const LandingHero = () => {
             </div>
           </div>
 
-          <div className="text-sm md:text-xl font-light text-gray-400">
-            Next Generation Machine Learning Technology To Build Emails for You.
+          <div className="sm:text-xl md:text-2xl lg:text-3xl 2xl:text-4xl font-light text-gray-400">
+            AI-powered tools that write, edit, and optimize emails for you.
           </div>
-          
+
           {!isSignedIn && (
             <div>
               <Link href="/dashboard">
                 <Button variant="premium" className="md:text-lg py-3 px-6 md:py-4 md:px-8 rounded-full font-semibold transition-transform transform hover:scale-105">
-                  Get Started for Free
+                  Start Writing with AI
                 </Button>
               </Link>
             </div>
           )}
         </div>
 
-         {/* Right Content */}
-         <div className="flex flex-col items-center justify-center flex-1 mt-10 md:mt-0 md:pl-10">
+        {/* Right Content */}
+        <div className="flex flex-col items-center justify-center flex-1 md:flex-1 lg:flex-1 mt-10 md:mt-0 md:pl-10">
           <div className="text-2xl font-bold text-white mb-4 text-center">Next-Gen AI Email Generator</div>
-          <MiniForm className="w-full max-w-md md:max-w-2xl" />
+          <MiniForm className="w-full md:max-w-4xl" />
         </div>
       </div>
     </div>

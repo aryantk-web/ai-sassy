@@ -1,36 +1,29 @@
 import { auth } from "@clerk/nextjs/server";
-import ConversationPage from "./ConversionClient";
+import ConversationClient from "./ConversionClient";
 import prismadb from "@/lib/prismadb";
+// import { LoadingOverlay } from "@/components/ui/loading-overlay";
+// import { useState } from 'react';
 
-
-const page =async () => {
-  console.log("@23",);
+const ConversationPage = async () => {
   const { userId } = auth();
 
-    if (!userId) {
-        return false;
-    }
-    
-  const
-    userSubscription = await prismadb.userSubscription.findUnique({
-      where: { userId },
-      select: {
-        stripeSubscriptionId: true,
-        stripeCurrentPeriodEnd: true,
-        stripeCustomerId: true,
-        stripePriceId: true,
-      },
-    });
-  console.log({
-    userSubscription
-  })
-  
+  if (!userId) {
+    return false;
+  }
+
+  const userSubscription = await prismadb.userSubscription.findUnique({
+    where: { userId },
+    select: {
+      stripeSubscriptionId: true,
+      stripeCurrentPeriodEnd: true,
+      stripeCustomerId: true,
+      stripePriceId: true,
+    },
+  });
 
   return (
-    <>
-      <ConversationPage userSubscription={userSubscription}></ConversationPage>
-    </>
+    <ConversationClient userSubscription={userSubscription} />
   );
 };
 
-export default page;
+export default ConversationPage;
