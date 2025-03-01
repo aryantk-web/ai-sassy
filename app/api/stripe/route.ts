@@ -5,7 +5,7 @@ import prismadb from "@/lib/prismadb";
 import { stripe } from "@/lib/stripe"; 
 import { absoluteUrl } from "@/lib/utils"; 
 import { stringify } from "querystring";
-import { increaseApiLimit } from "@/lib/api-limit";
+// import { decreaseApiLimit } from "@/lib/api-limit";
 import Stripe from "stripe";
 
 const settingsUrl = absoluteUrl("/settings");

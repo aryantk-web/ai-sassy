@@ -20,7 +20,7 @@ interface FreeCounterProps {
 export const FreeCounter: React.FC<FreeCounterProps> = ({ 
     apiLimitCount = 0, 
     isPro = false, 
-    limit = 100 
+    limit = 15
 }) => {
     const proModal = useProModal(); 
     // console.log({
@@ -38,9 +38,13 @@ export const FreeCounter: React.FC<FreeCounterProps> = ({
         return null;
     }
 
+    // console.log("apiLimitCount :"+apiLimitCount+" limit :"+limit)
     // Calculate the percentage based on used count vs total limit
-    const percentage = (apiLimitCount / limit) * 100;
-    const remaining = limit - apiLimitCount;
+    const remaining = apiLimitCount;
+    const used = limit - apiLimitCount;
+    let percentage = used <= 0 ? 0: (used / limit) * 100;
+
+    // console.log("remaining :"+remaining +" used :"+used+" percentage :"+percentage)
 
     return (
         <div className="px-3">
@@ -49,8 +53,8 @@ export const FreeCounter: React.FC<FreeCounterProps> = ({
                     <div className="text-center text-sm text-white mb-4 space-y-2">
                         <p>
                             {isPro 
-                                ? `${remaining} / ${limit} Emails Remaining`
-                                : `${apiLimitCount} / ${limit} Free Generations`
+                                ? `${used} / ${limit} Emails Remaining`
+                                : `${used} / ${limit} Free Generations`
                             }
                         </p>   
                         <Progress 

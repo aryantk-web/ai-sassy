@@ -88,9 +88,9 @@ const Sidebar = ({
                 </div>
             </div>
             <FreeCounter
-                limit={userId?.limit}
+                limit={userId?.limit || 15}
                 isPro={isPro}
-                apiLimitCount={apiLimitCount}
+                apiLimitCount={apiLimitCount || 15}
             />
         </div>
     );

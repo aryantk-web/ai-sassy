@@ -14,10 +14,10 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
         redirect("sign-in");
        
     }
-    const
-        UserApiLimit = await prismadb.userApiLimit.findUnique({
+    const UserApiLimit = await prismadb.userApiLimit.findUnique({
             where: { userId },
         });
+    // console.log("user Api Limit" , JSON.stringify(UserApiLimit))
 
     return (
         <div className="h-full relative">

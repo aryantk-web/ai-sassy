@@ -104,15 +104,15 @@ const ConversationPage = ({ userSubscription }: ConversionPageProps) => {
         return;
       }
 
-      if (response.data.choices[0]?.message?.content && userSubscription !== null) {
-        const reduceCountResponse = await axios.post("/api/reduce");
+      // if (response.data.choices[0]?.message?.content && userSubscription !== null) {
+      //   const reduceCountResponse = await axios.post("/api/reduce");
 
-        if (reduceCountResponse.data.status) {
-          console.log("API count reduced successfully");
-        } else {
-          console.error("Failed to reduce API count");
-        }
-      }
+      //   if (reduceCountResponse.data.status) {
+      //     console.log("API count reduced successfully");
+      //   } else {
+      //     console.error("Failed to reduce API count");
+      //   }
+      // }
 
       const generatedContent = response.data.choices[0]?.message?.content || "No content received from API";
       setEmailContent(generatedContent);

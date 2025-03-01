@@ -5,7 +5,7 @@ import { OpenAI } from "openai";
 import prismadb from "@/lib/prismadb";
 
 import { checkSubscription } from "@/lib/subscription";
-import { increaseApiLimit, checkApiLimit } from "@/lib/api-limit";
+import { decreaseApiLimit, checkApiLimit } from "@/lib/api-limit";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -59,11 +59,24 @@ export async function POST(req: Request) {
     }
 
     // Fetch the current API limit count for the user
-    const userLimit = await prismadb.userApiLimit.findUnique({
+    let userLimit = await prismadb.userApiLimit.findUnique({
       where: {
         userId: userId,
       },
     });
+    
+    // If no user limit found, create a new entry with 15 counts
+    if (!userLimit) {
+      console.log("No user limit found, creating a new entry:", userId);
+      userLimit = await prismadb.userApiLimit.create({
+        data: {
+          userId: userId,
+          count: 15,
+          limit: 15
+        }
+      });
+      console.log("Created new user limit:", JSON.stringify(userLimit));
+    }
 
     // Check if the count exists and is greater than 0
     if (!userLimit || userLimit.count <= 0) {
@@ -103,6 +116,8 @@ export async function POST(req: Request) {
     });
 
     console.log("OpenAI response:", response);
+
+    await decreaseApiLimit();
 
     // Store email history
     if (formData) {
